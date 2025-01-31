@@ -1,0 +1,144 @@
+## General
+TA_name:        "Puru"  # TODO: Please add your name here
+use_wandb:      False   # Use WandB to track your experiments (True or False) 
+batch_size:      512    # Increase this if your GPU can handle it
+preload:         False   # Preloads all data to RAM (memory intensive!)
+num_classes:     null   # null: Will use all the available classes
+cls_data_dir:    "/content/hw2p2_puru_aligned/cls_data"  # TODO
+ver_data_dir:    "/content/hw2p2_puru_aligned/ver_data"  # TODO
+val_pairs_file:  "/content/hw2p2_puru_aligned/val_pairs.txt"  # TODO
+test_pairs_file: "/content/hw2p2_puru_aligned/test_pairs.txt" # TODO
+augument:        True
+train_type:      "cls" # Options: cls, ver_finetune, joint 
+
+checkpoint:
+  path: null # Path to checkpoint to resume training from (if any)
+  load_scheduler: False # Load scheduler state from checkpoint?
+  load_optimizer: False # Load optimizer state from checkpoint? 
+
+## Model
+model:
+  name: "convnext_tiny" # TODO: Set your model based on the ablation assigned to you. Name should be as displayed in the available models above.
+  embedding_size: 512
+  dropout_rate: 0.1
+
+## Training
+train:
+   epochs: 30
+
+
+## Optimizer
+optimizer:
+  name: "adam"     # Options: sgd, adam, adamw
+  model_lr: 0.003  # Base learning rate
+  loss_lr: 0.01    # Learning rate for loss function (ArcFace, SphereFace, CosFace)
+
+  # Common parameters
+  weight_decay: 0.0001
+
+  # Layer-wise learning rates
+  layer_decay:
+    enabled: False
+    decay_rate: 0.75
+
+  # SGD specific parameters
+  sgd:
+    momentum: 0.9
+    nesterov: True
+    dampening: 0
+
+  # Adam specific parameters
+  adam:
+    betas: [0.9, 0.999]
+    eps: 1.0e-8
+    amsgrad: False
+
+  # AdamW specific parameters
+  adamw:
+    betas: [0.9, 0.999]
+    eps: 1.0e-8
+    amsgrad: False
+
+## Learning Rate Scheduler Configuration
+scheduler:
+  name: "cosine"  # Options: reduce_lr, cosine, cosine_warm
+
+  # ReduceLROnPlateau specific parameters
+  reduce_lr:
+    mode: "min"  # Options: min, max
+    factor: 0.1  # Factor to reduce learning rate by
+    patience: 10  # Number of epochs with no improvement after which LR will be reduced
+    threshold: 0.0001  # Threshold for measuring the new optimum
+    threshold_mode: "rel"  # Options: rel, abs
+    cooldown: 0  # Number of epochs to wait before resuming normal operation
+    min_lr: 0.0000001  # Minimum learning rate
+    eps: 1e-8  # Minimal decay applied to lr
+
+  # CosineAnnealingLR specific parameters
+  cosine:
+    T_max: 30  # Maximum number of iterations
+    eta_min: 0.0000001  # Minimum learning rate
+    last_epoch: -1
+
+  # CosineAnnealingWarmRestarts specific parameters
+  cosine_warm:
+    T_0: 4  # Number of iterations for the first restart
+    T_mult: 4  # Factor increasing T_i after each restart
+    eta_min: 0.0001  # Minimum learning rate
+    last_epoch: -1
+
+  # Warmup parameters (can be used with any scheduler)
+  warmup:
+    enabled: False
+    type: "linear"  # Options: linear, exponential
+    epochs: 5
+    start_factor: 0.1
+    end_factor: 1.0
+
+weight_scheduler:
+  mode: null        # Options: linear, sigmoid, cosine, exponential, quadratic, cubic, null
+  weight_max: 1.0   # Maximum weight value  
+  weight_min: 0.0   # Minimum weight value 
+  min_epochs: 10    # Number of epochs to keep the weight at the minimum  
+  warmup_epochs: 20 # Number of epochs to warm up the weight
+
+classification_loss: # Just good ol' CrossEntropy
+  label_smoothing: 0.1
+  weight: 0.3
+
+verification_loss:
+  # Options: arcface, cosface, sphereface, triplet, margin, npair, contrastive
+  name: "cosface"
+  weight: 1.0
+  dist: "cossim"  # DO NOT MODIFY
+
+  # Loss-Specific parameters
+  arcface:
+    scale: 64.0
+    margin: 28.6 # In degrees (0.5 radians), default value used by paper
+
+  cosface:
+    scale: 64.0
+    margin: 0.35 # paper used values between 0.25 - 0.45
+
+  sphereface:
+    scale: 1.0
+    margin: 4 # paper reports 4 works best
+
+  triplet:
+    margin: 0.05
+
+  margin:
+    margin: 0.2
+
+  npair:
+
+  contrastive:
+    pos_margin: 1.0 # For CosineSimilarity()
+    neg_margin: 0.0 # For CosineSimilarity()
+    dist: "cossim" # DO NOT MODIFY
+
+  # Mining parameters (for losses that use miners)
+  mining:
+    epsilon: 0.1
+    type: "multi_similarity"  # Options: multi_similarity
