@@ -19,6 +19,12 @@ Open a `tmux` session:
 ```bash
 tmux new -s my_session
 ```
+Load anaconda environment:
+
+```bash
+module load anaconda3
+conda activate face-cls-ver 
+```
 
 Start an 8 hour interact session:
 
