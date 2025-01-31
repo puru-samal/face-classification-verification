@@ -12,6 +12,32 @@ pip install -r requirements.txt
 
 ## Usage
 
+### PSC Workflow:
+
+Open a `tmux` session:
+
+```bash
+tmux new -s my_session
+```
+
+Start an 8 hour interact session:
+
+```bash
+interact -p GPU-shared --gres=gpu:v100-32:1 -t 8:00:00
+```
+
+Optional: Download the dataset into the node's `$LOCAL` directory for faster disk access (storage is not persistent):
+
+```bash
+cd $LOCAL
+gdown 1wsSvmoCnw1uqWK1PokDN_0DEN56oXZb3 --output hw2p2_s25_aligned.tar.gz
+tar -xvzf hw2p2_s25_aligned.tar.gz
+rm hw2p2_s25_aligned.tar.gz
+cd path/to/project
+```
+
+### Run the script:
+
 ```bash
 python main.py --config config.yaml
 ```
