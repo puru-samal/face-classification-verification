@@ -1,24 +1,24 @@
 ## General
 TA_name:        "Puru"  # TODO: Please add your name here
 use_wandb:      False   # Use WandB to track your experiments (True or False) 
-batch_size:      512    # Increase this if your GPU can handle it
-preload:         False   # Preloads all data to RAM (memory intensive!)
+batch_size:      256    # Increase this if your GPU can handle it
+preload:         False  # Preloads all data to RAM (memory intensive!)
 num_classes:     null   # null: Will use all the available classes
-cls_data_dir:    "/content/hw2p2_puru_aligned/cls_data"  # TODO
-ver_data_dir:    "/content/hw2p2_puru_aligned/ver_data"  # TODO
-val_pairs_file:  "/content/hw2p2_puru_aligned/val_pairs.txt"  # TODO
-test_pairs_file: "/content/hw2p2_puru_aligned/test_pairs.txt" # TODO
+cls_data_dir:    "/local/hw2p2_puru_aligned/cls_data"  # TODO
+ver_data_dir:    "/local/hw2p2_puru_aligned/ver_data"  # TODO
+val_pairs_file:  "/local/hw2p2_puru_aligned/val_pairs.txt"  # TODO
+test_pairs_file: "/local/hw2p2_puru_aligned/test_pairs.txt" # TODO
 augument:        True
-train_type:      "cls" # Options: cls, ver_finetune, joint 
+train_type:      "joint" # Options: cls, ver_finetune, joint 
 
 checkpoint:
-  path: null # Path to checkpoint to resume training from (if any)
+  path: null
   load_scheduler: False # Load scheduler state from checkpoint?
   load_optimizer: False # Load optimizer state from checkpoint? 
 
 ## Model
 model:
-  name: "convnext_tiny" # TODO: Set your model based on the ablation assigned to you. Name should be as displayed in the available models above.
+  name: "resnet34" # TODO: Set your model based on the ablation assigned to you. Name should be as displayed in the available models above.
   embedding_size: 512
   dropout_rate: 0.1
 
@@ -30,7 +30,7 @@ train:
 ## Optimizer
 optimizer:
   name: "adam"     # Options: sgd, adam, adamw
-  model_lr: 0.003  # Base learning rate
+  model_lr: 0.005  # Base learning rate
   loss_lr: 0.01    # Learning rate for loss function (ArcFace, SphereFace, CosFace)
 
   # Common parameters
@@ -96,19 +96,19 @@ scheduler:
     end_factor: 1.0
 
 weight_scheduler:
-  mode: null        # Options: linear, sigmoid, cosine, exponential, quadratic, cubic, null
+  mode: cosine        # Options: linear, sigmoid, cosine, exponential, quadratic, cubic, null
   weight_max: 1.0   # Maximum weight value  
   weight_min: 0.0   # Minimum weight value 
-  min_epochs: 10    # Number of epochs to keep the weight at the minimum  
-  warmup_epochs: 20 # Number of epochs to warm up the weight
+  min_epochs: 15    # Number of epochs to keep the weight at the minimum  
+  warmup_epochs: 10 # Number of epochs to warm up the weight
 
 classification_loss: # Just good ol' CrossEntropy
   label_smoothing: 0.1
-  weight: 0.3
+  weight: 1.0
 
 verification_loss:
   # Options: arcface, cosface, sphereface, triplet, margin, npair, contrastive
-  name: "cosface"
+  name: "arcface"
   weight: 1.0
   dist: "cossim"  # DO NOT MODIFY
 

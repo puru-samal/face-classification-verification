@@ -2,7 +2,7 @@ import torch
 from typing import Dict, Any, Optional
 from torch.optim import lr_scheduler
 
-def create_scheduler(
+def create_lr_scheduler(
     optimizer: torch.optim.Optimizer,
     config: Dict[str, Any],
     train_loader: Optional[torch.utils.data.DataLoader] = None

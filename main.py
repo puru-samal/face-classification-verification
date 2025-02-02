@@ -73,7 +73,7 @@ cls_train_loader = DataLoader(
     cls_train_dataset, 
     batch_size   = config['batch_size'], 
     shuffle      = True,  
-    num_workers  = 8, 
+    num_workers  = 5, 
     pin_memory   = True, 
     prefetch_factor = 4
 )
@@ -81,7 +81,7 @@ cls_val_loader   = DataLoader(
     cls_val_dataset,   
     batch_size   = config['batch_size'], 
     shuffle      = False, 
-    num_workers  = 8, 
+    num_workers  = 5, 
     pin_memory   = True, 
     prefetch_factor = 4
 )
@@ -89,7 +89,7 @@ cls_test_loader  = DataLoader(
     cls_test_dataset, 
     batch_size   = config['batch_size'], 
     shuffle      = False, 
-    num_workers  = 8, 
+    num_workers  = 5, 
     pin_memory   = True, 
     prefetch_factor = 4
 )
@@ -127,7 +127,7 @@ ver_val_loader   = DataLoader(
     ver_val_dataset,   
     batch_size   = config['batch_size'], 
     shuffle      = False, 
-    num_workers  = 8, 
+    num_workers  = 5, 
     pin_memory   = True, 
     prefetch_factor = 4
 )
@@ -135,7 +135,7 @@ ver_test_loader  = DataLoader(
     ver_test_dataset, 
     batch_size   = config['batch_size'], 
     shuffle      = False, 
-    num_workers  = 8, 
+    num_workers  = 5, 
     pin_memory   = True, 
     prefetch_factor = 4
 )
@@ -188,8 +188,6 @@ expt_root = f"expts/{experiment_name}"
 os.makedirs(expt_root, exist_ok=True)
 # Copy config file
 shutil.copy(args.config, f"{expt_root}/config.yaml")
-# Copy summary
-shutil.copy("summary.txt", f"{expt_root}/summary.txt")
 # Write stats to file
 with open(f"{expt_root}/model_summary.txt", 'w') as f:
     f.write(str(model_stats))
@@ -210,9 +208,9 @@ if config['use_wandb']:
 
 # Loss | Optimizer | Scheduler | Weight Scheduler
 # --------------------------------------------------------------------------------
-loss_config = get_loss_config(config)
-optimizer   = create_optimizer(model, config)
-scheduler   = create_lr_scheduler(optimizer, config)
+loss_config = get_loss_config(len(cls_train_dataset.classes),config)
+optimizer   = create_optimizer(model, loss_config, config)
+scheduler   = create_lr_scheduler(optimizer, config, cls_train_loader)
 weight_scheduler = create_weight_scheduler(config)
 # --------------------------------------------------------------------------------  
 
@@ -254,6 +252,7 @@ if config['train_type'] == 'cls':
         val_cls_loader = cls_val_loader,
         val_ver_loader = ver_val_loader,
         num_epochs     = config['train']['epochs'],
+        save_dir       = f"{expt_root}/checkpoints" 
     )
 
     # Evaluate

@@ -430,7 +430,7 @@ class FaceTrainer:
 
     def load_checkpoint(self, path: str, load_scheduler: bool = False, load_optimizer: bool = False) -> None:
         """Load model checkpoint with AMP state."""
-        checkpoint = torch.load(path, map_location=self.device)
+        checkpoint = torch.load(path, weights_only=False, map_location=self.device)
         self.model.load_state_dict(checkpoint['model_state_dict'])
         if self.optimizer and checkpoint['optimizer_state_dict'] and load_optimizer:
             self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])

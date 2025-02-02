@@ -92,7 +92,7 @@ def create_weight_scheduler(config:Dict[str, Any]):
     else:
         raise ValueError(f"Invalid weight scheduler mode: {weight_scheduler_config['mode']}")
 
-    return WeightScheduler(config['weight_max'], config['weight_min'], config['min_epochs'], config['warmup_epochs'], mode)
+    return WeightScheduler(weight_scheduler_config['weight_max'],weight_scheduler_config['weight_min'], weight_scheduler_config['min_epochs'], weight_scheduler_config['warmup_epochs'], mode)
 
 if __name__ == "__main__":
     epochs = 40
